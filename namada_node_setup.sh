@@ -62,7 +62,7 @@ check_success() {
 
 echo -e "${GREEN}"
 echo "┌───────────────────────────────────────────────┐"
-echo "|   Добро пожаловать в скрипт установки ноды    |"
+echo "|   Добро пожаловать в скрипт настройки ноды    |"
 echo "|                   Namada от p0k               |"
 echo "└───────────────────────────────────────────────┘"
 echo -e "${NC}"
@@ -212,13 +212,17 @@ else
     git clone https://github.com/anoma/namada
     check_success
     cd namada
-    # Переключаемся на нужную версию
-    echo "Переключение на версию $NAMADA_TAG..."
-    sleep 1
     git checkout $NAMADA_TAG
     check_success
-    sleep 2
 fi
+
+
+# Переключаемся на нужную версию
+echo "Переключение на версию $NAMADA_TAG..."
+sleep 1
+git checkout $NAMADA_TAG
+check_success
+sleep 2
 
 # Проверяем существование бинарных файлов и спрашиваем пользователя, нужно ли их пересобирать
 if [[ -e ./target/release/namada ]]
@@ -323,6 +327,55 @@ sleep 2
 namada --version
 check_success
 
+echo -e "${BLUE}Настройка Namada Node в качестве службы systemd...${NC}"
+sleep 1
+
+cat << EOF > $HOME/namadad.service
+[Unit]
+Description=Namada Node
+After=network.target
+
+[Service]
+User=$USER
+WorkingDirectory=$HOME/.local/share/namada
+Type=simple
+ExecStart=/usr/local/bin/namada --base-dir=$HOME/.local/share/namada node ledger run
+Environment=NAMADA_CMT_STDOUT=true
+RemainAfterExit=no
+Restart=always
+RestartSec=5s
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+echo -e "${GREEN}Перемещение файла службы в /etc/systemd/system...${NC}"
+sleep 1
+sudo mv $HOME/namadad.service /etc/systemd/system &
+show_spinner $!
+wait $!
+
+echo -e "${GREEN}Обновление файла конфигурации systemd journald...${NC}"
+sleep 1
+sudo tee <<EOF >/dev/null /etc/systemd/journald.conf
+Storage=persistent
+EOF
+
+echo -e "${BLUE}Перезагружаем демона systemd...${NC}"
+sleep 1
+sudo systemctl daemon-reload
+check_success
+
+echo -e "${BLUE}Включаем автозапуск службы namadad...${NC}"
+sleep 1
+sudo systemctl enable namadad
+check_success
+
+echo -e "${BLUE}Запускаем службу namadad...${NC}"
+sudo systemctl restart namadad
+check_success
+
 # Скачиваем check_ports.sh из репозитория GitHub
 echo -e "${BLUE}Скачиваем check_ports.sh...${NC}"
 curl -O https://raw.githubusercontent.com/sicmundu/namada-auto-installer/main/check_ports.sh &
@@ -347,9 +400,13 @@ else
     echo -e "${RED}Проверка портов пропущена. Если вы захотите проверить порты в будущем, запустите файл check_ports.sh.${NC}"
 fi
 
+echo -e "${BLUE}Настройка Namada Node в качестве службы systemd...${NC}"
+sleep 2
+
+
 echo -e "${GREEN}"
 echo "┌───────────────────────────────────────────────┐"
-echo "|              Установка ноды Namada            |"
+echo "|              Настройка ноды Namada            |"
 echo "|                успешно завершена!             |"
 echo "└───────────────────────────────────────────────┘"
 echo -e "${NC}"

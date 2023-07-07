@@ -212,17 +212,13 @@ else
     git clone https://github.com/anoma/namada
     check_success
     cd namada
+    # Переключаемся на нужную версию
+    echo "Переключение на версию $NAMADA_TAG..."
+    sleep 1
     git checkout $NAMADA_TAG
     check_success
+    sleep 2
 fi
-
-
-# Переключаемся на нужную версию
-echo "Переключение на версию $NAMADA_TAG..."
-sleep 1
-git checkout $NAMADA_TAG
-check_success
-sleep 2
 
 # Проверяем существование бинарных файлов и спрашиваем пользователя, нужно ли их пересобирать
 if [[ -e ./target/release/namada ]]

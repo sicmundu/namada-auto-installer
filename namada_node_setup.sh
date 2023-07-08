@@ -400,6 +400,40 @@ else
     echo -e "${RED}Проверка портов пропущена. Если вы захотите проверить порты в будущем, запустите файл check_ports.sh.${NC}"
 fi
 
+# Проверяем, существует ли файл с именем ноды
+if [ -f node_name.txt ]; then
+    # Загружаем имя ноды из файла
+    NODE_NAME=$(cat node_name.txt)
+    echo "Текущее имя ноды: $NODE_NAME"
+    read -p "Хотите изменить имя ноды? (y/n): " response
+    if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+        read -p "Введите новое имя вашей ноды: " NODE_NAME
+        echo $NODE_NAME > node_name.txt &
+        show_spinner $!
+        wait $!
+        check_success
+    fi
+else
+    # Запрашиваем имя ноды у пользователя
+    read -p "Введите имя вашей ноды: " NODE_NAME
+    echo $NODE_NAME > node_name.txt &
+    show_spinner $!
+    wait $!
+    check_success
+fi
+
+# Скачиваем меню управления из репозитория GitHub
+echo -e "${BLUE}Скачиваем menu.sh...${NC}"
+curl -O https://raw.githubusercontent.com/sicmundu/namada-auto-installer/main/menu.sh &
+show_spinner $!
+wait $!
+check_success
+sleep 3
+
+# Даем check_ports.sh права на выполнение
+chmod +x menu.sh
+
+echo -e "${BLUE}Вы можете запустить меню управления нодой ./menu.sh${NC}"
 
 echo -e "${GREEN}"
 echo "┌───────────────────────────────────────────────┐"

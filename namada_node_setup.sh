@@ -24,6 +24,27 @@ show_spinner() {
         echo -ne "\r" > /dev/tty
     done
 }
+
+# Функция для копирования файлов с обработкой ошибок
+copy_with_retry() {
+    local src=$1
+    local dest=$2
+    local retries=5
+    for ((i=1; i<=retries; i++)); do
+        sudo cp $src $dest && return 0
+        echo "Ошибка при копировании. Попытка $i из $retries."
+        # Если файл занят, попытаемся остановить процесс, который его использует
+        local pid=$(lsof -t $dest)
+        if [[ -n $pid ]]; then
+            echo "Остановка процесса $pid, который использует файл $dest."
+            sudo kill $pid
+            sleep 2
+        fi
+    done
+    echo "Не удалось скопировать файл после $retries попыток."
+    exit 1
+}
+
 # Функция для проверки и обновления protoc
 check_and_update_protoc() {
     PROTOC_VERSION=$(protoc --version | awk '{print $2}' | awk -F. '{print $1}')
@@ -300,7 +321,7 @@ fi
 
 # Копирование cometbft в /usr/local/bin/
 echo "Копирование cometbft в /usr/local/bin/..."
-sudo cp ./build/cometbft* /usr/local/bin/
+copy_with_retry ./build/cometbft* /usr/local/bin/
 check_success
 sleep 2
 
@@ -315,9 +336,7 @@ sleep 2
 # Копирование бинарных файлов namada в /usr/local/bin/
 echo "Копирование бинарных файлов namada в /usr/local/bin/..."
 sleep 2
-sudo cp ./target/release/namada* /usr/local/bin/ &
-show_spinner $!
-wait $!
+copy_with_retry ./target/release/namada* /usr/local/bin/
 check_success
 sleep 3
 

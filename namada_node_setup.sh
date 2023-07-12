@@ -9,6 +9,7 @@ NC='\033[0m' # Без цвета
 
 GO_VERSION=1.20.5
 GO_ARCHIVE=go$GO_VERSION.linux-amd64.tar.gz
+NAMADA_CHAIN_ID="public-testnet-10.3718993c3648"
 
 # Функция для отображения анимации спиннера
 show_spinner() {
@@ -395,8 +396,16 @@ echo -e "${BLUE}Запускаем службу namadad...${NC}"
 sudo systemctl restart namadad
 check_success
 
+# Присоединение клиента к сети
+echo -e "${BLUE}Присоединение клиента к сети...${NC}"
+cd $HOME
+namada client utils join-network --chain-id $NAMADA_CHAIN_ID
+check_success
+sleep 2
+
 # Скачиваем check_ports.sh из репозитория GitHub
 echo -e "${BLUE}Скачиваем check_ports.sh...${NC}"
+cd $HOME
 wget -q -O check_ports.sh https://raw.githubusercontent.com/sicmundu/namada-auto-installer/main/check_ports.sh
 check_success
 sleep 3
@@ -441,6 +450,7 @@ fi
 
 # Скачиваем меню управления из репозитория GitHub
 echo -e "${BLUE}Скачиваем menu.sh...${NC}"
+cd $HOME
 wget -q -O menu.sh https://raw.githubusercontent.com/sicmundu/namada-auto-installer/main/menu.sh
 check_success
 sleep 3

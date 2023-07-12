@@ -378,7 +378,7 @@ check_success
 
 # Скачиваем check_ports.sh из репозитория GitHub
 echo -e "${BLUE}Скачиваем check_ports.sh...${NC}"
-curl -O https://raw.githubusercontent.com/sicmundu/namada-auto-installer/main/check_ports.sh &
+wget -q -O check_ports.sh https://raw.githubusercontent.com/sicmundu/namada-auto-installer/main/check_ports.sh &
 show_spinner $!
 wait $!
 check_success
@@ -424,7 +424,7 @@ fi
 
 # Скачиваем меню управления из репозитория GitHub
 echo -e "${BLUE}Скачиваем menu.sh...${NC}"
-curl -O https://raw.githubusercontent.com/sicmundu/namada-auto-installer/main/menu.sh &
+wget -q -O menu.sh https://raw.githubusercontent.com/sicmundu/namada-auto-installer/main/menu.sh &
 show_spinner $!
 wait $!
 check_success

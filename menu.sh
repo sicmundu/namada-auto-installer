@@ -1,4 +1,28 @@
 #!/bin/bash
+# Функция для отображения анимации спиннера
+show_spinner() {
+    local -r FRAMES='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+    local -r NUMBER_OF_FRAMES=${#FRAMES}
+    local -r INTERVAL=0.1
+    local -r CMDS_PID=$1
+
+    local frame=0
+    while kill -0 "$CMDS_PID" &>/dev/null; do
+        echo -ne "${FRAMES:frame++%NUMBER_OF_FRAMES:1}" > /dev/tty
+        sleep $INTERVAL
+        echo -ne "\r" > /dev/tty
+    done
+}
+
+# Функция для проверки успешности выполнения команды
+check_success() {
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}Успешно!${NC}"
+    else
+        echo -e "${RED}Не удалось.${NC}"
+        exit 1
+    fi
+}
 
 # Проверяем, существует ли файл с именем ноды
 if [ -f node_name.txt ]; then

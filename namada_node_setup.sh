@@ -399,8 +399,15 @@ check_success
 # Присоединение клиента к сети
 echo -e "${BLUE}Присоединение клиента к сети...${NC}"
 cd $HOME
-namada client utils join-network --chain-id $NAMADA_CHAIN_ID
-check_success
+
+# Проверка существования директории
+if [ -d "$HOME/.local/share/namada/${NAMADA_CHAIN_ID}" ]; then
+    echo "Директория сети уже существует. Пропускаем этот шаг."
+else
+    namada client utils join-network --chain-id $NAMADA_CHAIN_ID
+    check_success
+fi
+
 sleep 2
 
 # Скачиваем check_ports.sh из репозитория GitHub

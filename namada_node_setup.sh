@@ -497,10 +497,19 @@ wget -q -O menu.sh https://raw.githubusercontent.com/sicmundu/namada-auto-instal
 check_success
 sleep 3
 
+# Скачиваем скрипт автонастройки ноды
+echo_and_log "Скачиваем скрипт автонастройки ноды.." "${BLUE}"
+cd $HOME
+wget -q -O menu.sh https://raw.githubusercontent.com/sicmundu/namada-auto-installer/main/setup_namada.sh
+chmod +x setup_namada.sh
+check_success
+sleep 3
+
 # Даем check_ports.sh права на выполнение
 chmod +x menu.sh
 
-echo -e "${BLUE}Вы можете запустить меню управления нодой ./menu.sh${NC}"
+echo -e "${BLUE}Вы можете запустить скрипт автонастройки нодой ./setup_namada.sh${NC}"
+echo -e "${BLUE}Скрипт ручной настройки ./menu.sh${NC}"
 
 echo -e "${GREEN}"
 echo "┌───────────────────────────────────────────────┐"

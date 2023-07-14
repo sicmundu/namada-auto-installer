@@ -155,7 +155,7 @@ echo "└───────────────────────�
 echo -e "${NC}"
 sleep 2
 apt-get update
-apt-get install -y make git-core libssl-dev pkg-config libclang-12-dev build-essential protobuf-compiler curl wget grep &
+apt-get install -y make git-core libssl-dev pkg-config libclang-12-dev build-essential protobuf-compiler curl wget grep jq &
 
 # Показать спиннер во время установки зависимостей
 show_spinner $!

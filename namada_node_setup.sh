@@ -10,7 +10,6 @@ NC='\033[0m' # Без цвета
 NODE='namada'
 GO_VERSION=1.20.5
 GO_ARCHIVE=go$GO_VERSION.linux-amd64.tar.gz
-NAMADA_CHAIN_ID="public-testnet-10.3718993c3648"
 
 # Функция для отображения анимации спиннера
 show_spinner() {
@@ -236,6 +235,15 @@ show_spinner $!
 wait $!
 check_success
 sleep 2
+
+# Получение NAMADA_CHAIN_ID из конфигурации
+echo_and_log "Получение NAMADA_CHAIN_ID из конфигурации GitHub..." "${BLUE}"
+NAMADA_CHAIN_ID=$(curl -s https://raw.githubusercontent.com/sicmundu/namada-auto-installer/main/config | grep NAMADA_CHAIN_ID | cut -d '=' -f 2)
+check_success
+sleep 1
+echo_and_log "Полученная ID цепочки из конфига: ${NAMADA_CHAIN_ID}" "${GREEN}"
+sleep 2
+
 # Получение NAMADA_TAG из конфигурации
 echo_and_log "Получение NAMADA_TAG из конфигурации GitHub..." "${BLUE}"
 NAMADA_TAG=$(curl -s https://raw.githubusercontent.com/sicmundu/namada-auto-installer/main/config | grep NAMADA_TAG | cut -d '=' -f 2)

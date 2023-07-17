@@ -106,7 +106,7 @@ execute_commands() {
     namada client init-validator --alias $NODE_NAME --source my-account --commission-rate 0.1 --max-commission-rate-change 0.1
     check_success
     echo_and_log "3) Получение токенов в кране" $BLUE
-    namadac transfer --token NAM --amount 1000 --source faucet --target $NODE_NAME --signer $NODE_NAME
+    namada client transfer --token NAM --amount 1000 --source faucet --target $NODE_NAME --signer $NODE_NAME
     check_success
     echo_and_log "4) Проверка баланса" $BLUE
     namada client balance --token NAM --owner $NODE_NAME

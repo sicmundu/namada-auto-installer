@@ -10,6 +10,8 @@ NC='\033[0m' # Без цвета
 NODE='namada'
 GO_VERSION=1.20.5
 GO_ARCHIVE=go$GO_VERSION.linux-amd64.tar.gz
+# Получаем дату и время запуска скрипта
+START_TIME=$(date '+%Y-%m-%d_%H-%M-%S')
 
 # Функция для отображения анимации спиннера
 show_spinner() {
@@ -87,7 +89,7 @@ check_success() {
 # Функция для логирования
 log() {
     local message="$1"
-    local log_file="$HOME/${NODE}_install.log"  # Замените на имя вашего файла лога
+    local log_file="$HOME/${NODE}_install_${START_TIME}.log"  # Добавляем дату и время запуска скрипта к имени файла лога
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $message" >> "$log_file"
 }
 

@@ -60,24 +60,27 @@ check_success() {
 
 # Функция для проверки имени ноды
 check_node_name() {
-    if [ -f node_name.txt ]; then
-        NODE_NAME=$(cat node_name.txt)
-        echo_and_log "Текущее имя ноды: $NODE_NAME" $BLUE
+    if grep -q "NODE_NAME" "$HOME/.bash_profile"; then
+        # Загружаем имя ноды из файла
+        NODE_NAME=$(grep "NODE_NAME" "$HOME/.bash_profile" | cut -d'=' -f2)
+        echo_and_log "Текущее имя ноды: $NODE_NAME" "${BLUE}"
         read -p "Хотите изменить имя ноды? (y/n): " response
         if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
             read -p "Введите новое имя вашей ноды: " NODE_NAME
-            echo $NODE_NAME > node_name.txt &
+            sed -i "/NODE_NAME/c\export NODE_NAME=$NODE_NAME" "$HOME/.bash_profile" &
             show_spinner $!
             wait $!
             check_success
         fi
     else
+        # Запрашиваем имя ноды у пользователя
         read -p "Введите имя вашей ноды: " NODE_NAME
-        echo $NODE_NAME > node_name.txt &
+        echo 'export NODE_NAME ='\"${NODE_NAME}\" >> "$HOME/.bash_profile" &
         show_spinner $!
         wait $!
         check_success
     fi
+
 }
 
 # Функция для проверки статуса синхронизации ноды

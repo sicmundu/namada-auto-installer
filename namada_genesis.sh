@@ -75,6 +75,12 @@ echo_and_log "Пожалуйста, создайте Personal Access Token на 
 read TOKEN
 sleep 1
 
+echo_and_log "Проверка и установка пакетов.." "$BLUE"
+sudo apt update
+sudo apt install git wget curl
+check_success
+sleep 1
+
 # Получить публичный IP-адрес
 echo_and_log "Получение публичного IP..." "$BLUE"
 PUBLIC_IP=$(curl -s https://ipinfo.io/ip)

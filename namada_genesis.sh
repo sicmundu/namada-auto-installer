@@ -9,6 +9,7 @@ NC='\033[0m' # Без цвета
 
 NODE=namada
 METHOD=genesis
+NAMADA_VERSION="namada-v0.20.0-Linux-x86_64"
 
 # Обработка ошибок при выполнении команд
 set -e
@@ -61,18 +62,24 @@ check_success() {
 }
 
 # Запросить имя ноды у пользователя
-echo_and_log "Введите имя вашей ноды:" "$BLUE"
-read ALIAS
+while [ -z "$ALIAS" ]; do
+    echo_and_log "Введите имя вашей ноды:" "$BLUE"
+    read ALIAS
+done
 sleep 1
 
 # Запросить имя пользователя на GitHub
-echo_and_log "Введите ваше имя пользователя на GitHub:" "$BLUE"
-read USERNAME
+while [ -z "$USERNAME" ]; do
+    echo_and_log "Введите ваше имя пользователя на GitHub:" "$BLUE"
+    read USERNAME
+done
 sleep 1
 
 # Запросить персональный токен доступа на GitHub
-echo_and_log "Пожалуйста, создайте Personal Access Token на GitHub по адресу: https://github.com/settings/tokens?type=beta и введите его" "$BLUE"
-read TOKEN
+while [ -z "$TOKEN" ]; do
+    echo_and_log "Пожалуйста, создайте Personal Access Token на GitHub по адресу: https://github.com/settings/tokens?type=beta и введите его" "$BLUE"
+    read TOKEN
+done
 sleep 1
 
 echo_and_log "Проверка и установка пакетов.." "$BLUE"
@@ -92,52 +99,46 @@ sleep 1
 
 # Скачать и распаковать Namada
 echo_and_log "Скачивание и распаковка Namada..." "$BLUE"
-if [ ! -f "namada-v0.20.0-Linux-x86_64.tar.gz" ]; then
-    wget https://github.com/anoma/namada/releases/download/v0.20.0/namada-v0.20.0-Linux-x86_64.tar.gz
+if [ ! -f "$HOME/$NAMADA_VERSION.tar.gz" ]; then
+    wget -P $HOME https://github.com/anoma/namada/releases/download/v0.20.0/$NAMADA_VERSION.tar.gz
     check_success
     sleep 1
 else
     echo_and_log "Файл уже существует, пропускаем загрузку." "$YELLOW"
 fi
 
-tar -zxvf namada-v0.20.0-Linux-x86_64.tar.gz || echo_and_log "Не удалось распаковать файл. Возможно, он уже распакован." "$YELLOW"
+tar -zxvf $HOME/$NAMADA_VERSION.tar.gz -C $HOME || echo_and_log "Не удалось распаковать файл. Возможно, он уже распакован." "$YELLOW"
 check_success
 sleep 1
-
-# Перейти в папку namada
-cd namada-v0.20.0-Linux-x86_64
 
 # Выполнить команду init-genesis-validator
 echo_and_log "Инициализация валидатора genesis..." "$BLUE"
-./namada client utils init-genesis-validator --alias $ALIAS --max-commission-rate-change 0.01 --commission-rate 0.05 --net-address $PUBLIC_IP:26656
+$HOME/$NAMADA_VERSION/namada client utils init-genesis-validator --alias $ALIAS --max-commission-rate-change 0.01 --commission-rate 0.05 --net-address $PUBLIC_IP:26656
 check_success
 sleep 1
 
-cd $HOME
-
 # Клонировать форкнутый репозиторий на GitHub
 echo_and_log "Клонирование репозитория GitHub..." "$BLUE"
-if [ ! -d "namada-testnets" ]; then
-    git clone https://github.com/$USERNAME/namada-testnets.git
+if [ ! -d "$HOME/namada-testnets" ]; then
+    cd $HOME
+    git clone https://github.com/$USERNAME/namada-testnets $HOME/namada-testnets
     check_success
-    sleep 1
 else
-    echo_and_log "Директория уже существует, пропускаем клонирование." "$YELLOW"
+    echo_and_log "Репозиторий уже клонирован, пропускаем этот шаг." "$YELLOW"
 fi
+sleep 1
 
-# Копировать validator.toml в правильную директорию
-echo_and_log "Копирование validator.toml в namada-public-testnet-11..." "$BLUE"
+# Копировать файл validator.toml в namada-public-testnet-11
+echo_and_log "Копирование файла validator.toml..." "$BLUE"
 cp $HOME/.local/share/namada/pre-genesis/$ALIAS/validator.toml $HOME/namada-testnets/namada-public-testnet-11/$ALIAS.toml
 check_success
 sleep 1
 
-# Добавить валидатор toml на GitHub
-echo_and_log "Добавление validator.toml на GitHub..." "$BLUE"
+# Добавить файлы validator.toml на GitHub
+echo_and_log "Добавление файлов validator.toml на GitHub..." "$BLUE"
 cd $HOME/namada-testnets
-git config credential.helper 'store --file=.git/credentials'
-echo "https://$USERNAME:$TOKEN@github.com" > .git/credentials
-git add .
-git commit -m "Create $ALIAS.toml"
+git add namada-public-testnet-11/$ALIAS.toml
+git commit -m "Create $ALIAS"
 git push origin main
 check_success
 sleep 1

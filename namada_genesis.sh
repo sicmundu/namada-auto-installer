@@ -113,6 +113,8 @@ echo_and_log "Инициализация валидатора genesis..." "$BLUE
 check_success
 sleep 1
 
+cd $HOME
+
 # Клонировать форкнутый репозиторий на GitHub
 echo_and_log "Клонирование репозитория GitHub..." "$BLUE"
 if [ ! -d "namada-testnets" ]; then

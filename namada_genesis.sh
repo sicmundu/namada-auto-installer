@@ -134,11 +134,13 @@ cp $HOME/.local/share/namada/pre-genesis/$ALIAS/validator.toml $HOME/namada-test
 check_success
 sleep 1
 
-# Добавить файлы validator.toml на GitHub
-echo_and_log "Добавление файлов validator.toml на GitHub..." "$BLUE"
+# Добавить валидатор toml на GitHub
+echo_and_log "Добавление validator.toml на GitHub..." "$BLUE"
 cd $HOME/namada-testnets
-git add namada-public-testnet-11/$ALIAS.toml
-git commit -m "Create $ALIAS"
+git config credential.helper 'store --file=.git/credentials'
+echo "https://$USERNAME:$TOKEN@github.com" > .git/credentials
+git add .
+git commit -m "Create $ALIAS.toml"
 git push origin main
 check_success
 sleep 1

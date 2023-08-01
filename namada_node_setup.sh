@@ -291,7 +291,7 @@ check_success
 sleep 2
 
 # Проверяем существование бинарных файлов и спрашиваем пользователя, нужно ли их пересобирать
-if [[ -e ./target/release/namada ]]
+if [[ -e $HOME/namada/target/release/namada ]]
 then
     echo_and_log "Бинарные файлы уже собраны. Собрать заново? (Y/n)" "${YELLOW}"
     while true; do
@@ -339,7 +339,7 @@ else
 fi
 
 # Проверяем существование CometBFT и спрашиваем пользователя, нужно ли его пересобирать
-if [[ -e ./build/cometbft ]]
+if [[ -e $HOME/namada/comebft/build/cometbft ]]
 then
     echo -e "${YELLOW}CometBFT уже собран. Собрать заново? (Y/n)${NC}"
     while true; do

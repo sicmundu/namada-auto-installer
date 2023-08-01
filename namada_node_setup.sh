@@ -255,7 +255,7 @@ echo_and_log "Полученная версия Namada из конфига: ${NA
 sleep 2
 
 # Проверяем, существует ли директория 'namada'
-if [ -d "namada" ]; then
+if [ -d "$HOME/namada" ]; then
     # Если директория существует, переходим в неё
     echo_and_log "Директория 'namada' уже существует. Обновление репозитория..." "${BLUE}"
     sleep 1
@@ -290,16 +290,12 @@ git checkout $NAMADA_TAG
 check_success
 sleep 2
 
-# Проверяем существование бинарных файлов и спрашиваем пользователя, нужно ли их пересобирать
-if [[ -e $HOME/namada/target/release/namada ]]
-then
+if [[ -e $HOME/namada/target/release/namada ]]; then
     echo_and_log "Бинарные файлы уже собраны. Собрать заново? (Y/n)" "${YELLOW}"
     while true; do
         read -p "" -n 1 -r
         echo    # (optional) move to a new line
-        if [[ $REPLY =~ ^[Yy]$ ]]
-        then
-            # Если пользователь ответил 'y' или 'Y', или просто нажал enter, то пересобираем бинарные файлы
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
             echo "┌───────────────────────────────────────────────┐"
             echo "|           Сборка бинарных файлов...           |"
             echo "└───────────────────────────────────────────────┘"
@@ -310,15 +306,25 @@ then
             wait $!
             check_success
             break
-        elif [[ $REPLY =~ ^[Nn]$ ]]
-        then
-            # Если пользователь ответил 'n' или 'N', прекращаем пересборку
+        elif [[ $REPLY =~ ^[Nn]$ ]]; then
             break
         else
             echo_and_log "Неизвестный ответ. Пожалуйста, ответьте 'y' или 'n'" "${RED}"
         fi
     done
+else
+    # Файл не найден, выполните сборку
+    echo "┌───────────────────────────────────────────────┐"
+    echo "|           Сборка бинарных файлов...           |"
+    echo "└───────────────────────────────────────────────┘"
+    log "Сборка бинарных файлов..."
+    sleep 2
+    make build-release &
+    show_spinner $!
+    wait $!
+    check_success
 fi
+
 
 # Проверяем, существует ли директория 'cometbft'
 if [ -d "cometbft" ]; then
@@ -339,15 +345,12 @@ else
 fi
 
 # Проверяем существование CometBFT и спрашиваем пользователя, нужно ли его пересобирать
-if [[ -e $HOME/namada/comebft/build/cometbft ]]
-then
+if [[ -e $HOME/namada/comebft/build/cometbft ]]; then
     echo -e "${YELLOW}CometBFT уже собран. Собрать заново? (Y/n)${NC}"
     while true; do
         read -p "" -n 1 -r
         echo    # (optional) move to a new line
-        if [[ $REPLY =~ ^[Yy]$ ]]
-        then
-            # Если пользователь ответил 'y' или 'Y', или просто нажал enter, то пересобираем CometBFT
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
             echo "┌───────────────────────────────────────────────┐"
             echo "|           Сборка CometBFT...                  |"
             echo "└───────────────────────────────────────────────┘"
@@ -356,15 +359,23 @@ then
             check_success
             sleep 2
             break
-        elif [[ $REPLY =~ ^[Nn]$ ]]
-        then
-            # Если пользователь ответил 'n' или 'N', прекращаем пересборку
+        elif [[ $REPLY =~ ^[Nn]$ ]]; then
             break
         else
             echo_and_log "Неизвестный ответ. Пожалуйста, ответьте 'y' или 'n'" "${RED}"
         fi
     done
+else
+    # CometBFT не найден, выполните сборку
+    echo "┌───────────────────────────────────────────────┐"
+    echo "|           Сборка CometBFT...                  |"
+    echo "└───────────────────────────────────────────────┘"
+    log "Сборка CometBFT..."
+    make build
+    check_success
+    sleep 2
 fi
+
 
 # Копирование cometbft в /usr/local/bin/
 echo_and_log "Копирование cometbft в /usr/local/bin/..." "${BLUE}"

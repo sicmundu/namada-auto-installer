@@ -124,6 +124,8 @@ if [ ! -d "$HOME/namada-testnets" ]; then
     git clone https://github.com/$USERNAME/namada-testnets $HOME/namada-testnets
     check_success
 else
+    cd $HOME/namada-testnets
+    git pull origin main
     echo_and_log "Репозиторий уже клонирован, пропускаем этот шаг." "$YELLOW"
 fi
 sleep 1

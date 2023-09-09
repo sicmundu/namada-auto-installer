@@ -134,7 +134,7 @@ sleep 1
 
 # Копировать файл validator.toml в namada-public-testnet-12
 echo_and_log "Копирование файла validator.toml..." "$BLUE"
-cp $HOME/.local/share/namada/pre-genesis/$ALIAS/validator.toml $HOME/namada-testnets/namada-public-testnet-12/$ALIAS.toml
+cp $HOME/.local/share/namada/pre-genesis/$ALIAS/validator.toml $HOME/namada-testnets/namada-public-testnet-13/$ALIAS.toml
 check_success
 sleep 1
 

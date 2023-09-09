@@ -9,7 +9,7 @@ NC='\033[0m' # Без цвета
 
 NODE=namada
 METHOD=genesis
-NAMADA_VERSION="namada-v0.20.1-Linux-x86_64"
+NAMADA_VERSION="namada-v0.22.0-Linux-x86_64"
 
 # Обработка ошибок при выполнении команд
 set -e
@@ -100,7 +100,7 @@ sleep 1
 # Скачать и распаковать Namada
 echo_and_log "Скачивание и распаковка Namada..." "$BLUE"
 if [ ! -f "$HOME/$NAMADA_VERSION.tar.gz" ]; then
-    wget -P $HOME https://github.com/anoma/namada/releases/download/v0.20.1/$NAMADA_VERSION.tar.gz
+    wget -P $HOME https://github.com/anoma/namada/releases/download/v0.22.0/$NAMADA_VERSION.tar.gz
     check_success
     sleep 1
 else
